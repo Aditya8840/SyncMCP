@@ -28,8 +28,44 @@ def register_google_tools(mcp):
 
     @mcp.tool()
     def get_events(start_date: str, end_date: str) -> str:
-        """Get events from the Google Calendar API"""
+        """Get events from the Google Calendar API
+        
+        Args:
+            start_date: Lower bound (exclusive) for an event's end time to filter by.
+                    Must be an RFC3339 timestamp with mandatory time zone offset.
+                    Examples: '2011-06-03T10:00:00-07:00', '2011-06-03T10:00:00Z'
+            end_date: Upper bound (exclusive) for an event's start time to filter by.
+                    Must be an RFC3339 timestamp with mandatory time zone offset.
+                    Examples: '2011-06-03T10:00:00-07:00', '2011-06-03T10:00:00Z'
+                    Must be greater than start_date.
+        
+        Returns:
+            String containing list of events or error message
+        """
         if not auth_server.is_authenticated():
             return "Not authenticated. Please run authenticate() first."
         
-        return "sample event"
+        try:
+            credentials = auth_server.get_credentials()
+            service = build('calendar', 'v3', credentials=credentials)
+
+            events_result = service.events().list(
+                calendarId='primary',
+                timeMin=start_date,
+                timeMax=end_date,
+                singleEvents=True,
+                orderBy='startTime'
+            ).execute()
+            events = events_result.get('items', [])
+
+            if not events:
+                return "No events found"
+            event_list = []
+            for event in events:
+                start = event['start'].get('dateTime', event['start'].get('date'))
+                summary = event.get('summary', 'No title')
+                event_list.append(f"• {summary} - {start}")
+            
+            return f"Found {len(events)} events:\n" + "\n".join(event_list)
+        except Exception as e:
+            return f"Error fetching events: {str(e)}"
