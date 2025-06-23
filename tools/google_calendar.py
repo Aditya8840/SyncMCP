@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
 from .shared import auth_server
 
-def register_google_tools(mcp):
+def register_google_calendar_tools(mcp):
     """Register Google Calendar tools with the MCP server"""
     
     @mcp.tool()
