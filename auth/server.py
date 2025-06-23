@@ -14,7 +14,7 @@ class AuthServer:
     def __init__(self):
         self.credentials_file = os.getenv("SECRET_PATH")
         self.token_file = os.getenv("TOKEN_PATH")
-        self.scopes = ['https://www.googleapis.com/auth/calendar']
+        self.scopes = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/tasks']
         self.port_range = (3500, 3510)
         self.server = None
         self.credentials = None
