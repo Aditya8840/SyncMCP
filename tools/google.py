@@ -69,3 +69,37 @@ def register_google_tools(mcp):
             return f"Found {len(events)} events:\n" + "\n".join(event_list)
         except Exception as e:
             return f"Error fetching events: {str(e)}"
+
+    @mcp.tool()
+    def create_event(summary: str, description: str, start_date: str, end_date: str) -> str:
+        """Create an event in the Google Calendar API
+        
+        Args:
+            summary: The title of the event
+            description: The description of the event
+            start_date: The start date of the event
+            end_date: The end date of the event
+        """
+        if not auth_server.is_authenticated():
+            return "Not authenticated. Please run authenticate() first."
+        
+        try:
+            credentials = auth_server.get_credentials()
+            service = build('calendar', 'v3', credentials=credentials)
+            
+            event = service.events().insert(calendarId='primary', body={
+                'summary': summary,
+                'description': description,
+                'start': {
+                    'dateTime': start_date,
+                    'timeZone': 'Asia/Kolkata'
+                },
+                'end': {
+                    'dateTime': end_date,
+                    'timeZone': 'Asia/Kolkata'
+                }
+            }).execute()
+
+            return f"Event created: {event['summary']}"
+        except Exception as e:
+            return f"Error creating event: {str(e)}"
