@@ -1,7 +1,7 @@
 [project]
-name = "gcalender"
+name = "SyncMCP"
 version = "0.1.0"
-description = "Add your description here"
+description = "Sync your calendar and tasks seamlessly with MCP"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
